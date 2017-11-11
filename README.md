@@ -11,7 +11,7 @@ A plugin for working with [Neo4j](http://www.neo4j.org)'s [Cypher](http://docs.n
 * Select "Install Package"
 * Select "Cyper"
 
-The plugin will detect files ending in `.cql` or `.cyp` as Cypher, optionally just select Cypher from the Syntax menu. 
+The plugin will detect files ending in `.cql` or `.cyp` as Cypher, optionally just select Cypher from the Syntax menu.
 
 
 # Usage

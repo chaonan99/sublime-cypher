@@ -1,8 +1,12 @@
+from __future__ import print_function
 import sublime
 import sublime_plugin
 
-
-import urllib2
+import sys
+if sys.version_info[0] < 3:
+    from urllib2 import urlopen, Request, HTTPError
+else:
+    from urllib.request import urlopen, Request, HTTPError
 import json
 
 
@@ -42,26 +46,26 @@ def print_table(headers, items):
 
     lines = '+-' + '-+-'.join(lines) + '-+'
 
-    print lines
-    print '| ' + ' | '.join(headers) + ' |'
-    print lines
+    print(lines)
+    print('| ' + ' | '.join(headers) + ' |')
+    print(lines)
 
     for row in rows:
         fields = [c.ljust(column_widths[i]) for i, c in enumerate(row)]
-        print '| ' + ' | '.join(fields) + ' |'
+        print('| ' + ' | '.join(fields) + ' |')
 
-    print lines
+    print(lines)
 
-    print "%d items returned" % len(rows)
+    print("%d items returned" % len(rows))
 
 
 def print_error(file_name, query, err):
     try:
         ex = err['exception']
         msg = err['message']
-        print '------------'
-        print msg
-        print '==============='
+        print('------------')
+        print(msg)
+        print('===============')
         if ex == 'SyntaxException':
             try:
                 _, match, col = msg.rsplit('\n', 2)
@@ -74,9 +78,9 @@ def print_error(file_name, query, err):
 
                 line_num += 1
                 msg = 'File "%s:%s:%s": %s' % (file_name, line_num, col, msg)
-                print msg
+                print(msg)
                 return line_num, col
-            except Exception, e:
+            except Exception as e:
                 pass
 
         msg = 'File "%s"\n%s: %s' % (file_name, ex, msg)
@@ -85,7 +89,7 @@ def print_error(file_name, query, err):
         from traceback import format_exc
         msg = format_exc()
 
-    print msg
+    print(msg)
 
 
 def cypher(query, **args):
@@ -97,7 +101,7 @@ def cypher(query, **args):
 
     data = json.dumps(data)
 
-    req = urllib2.Request(
+    req = Request(
         url="http://localhost:7474/db/data/cypher",
         data=data)
 
@@ -105,13 +109,13 @@ def cypher(query, **args):
     req.add_header('Content-Type', 'application/json')
 
     try:
-        resp = urllib2.urlopen(req)
-    except urllib2.HTTPError as err:
+        resp = urlopen(req)
+    except HTTPError as err:
         if err.code == 400:
             err = json.loads(err.read())
             return print_error('', query, err)
         else:
-            print err
+            print(err)
 
         return
     else:
